@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# todo and database
+todo.md
+data/
+
 # Distribution / packaging
 .Python
 build/
