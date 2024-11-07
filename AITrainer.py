@@ -65,25 +65,31 @@ while True:
             cv2.putText(img, f'{int(per)} %', (1100, 75), cv2.FONT_HERSHEY_PLAIN, 4, (255, 0, 0), 4)
 
         else:
-            # Squat counting logic (not using angle)
-            # Example: Detecting vertical movement based on knee or hip position
-            knee_y = lmList[26][2]  # Right knee position
-            hip_y = lmList[24][2]  # Right hip position
+            angle = detector.findAngle(img, 24, 26, 28)
 
-            # Define squat range (adjust these values based on the video content)
-            squat_start, squat_end = 400, 500  # Approximate y-coordinates for squat motion
-            if knee_y > squat_end and direction == 0:
-                count += 0.5
-                direction = 1
-                print(f"Squat count: {count}, Direction: {direction}")
-            elif knee_y < squat_start and direction == 1:
-                count += 0.5
-                direction = 0
-                print(f"Squat count: {count}, Direction: {direction}")
+            # Переводим углы в проценты, где минимальный угол в присяде равен 0%, а максимальный - 100%
+            per = np.interp(angle, (68,171), (0,100))
+            bar = np.interp(angle, (68,171), (650, 100))
+
+            if per == 0:
+                if direction == 0:
+                    count += 0.5
+                    direction = 1
+            if per == 100:
+                if direction == 1:
+                    count += 0.5
+                    direction = 0
+
+            print(f'{count = }')
 
         # Display the current count for both exercises
         cv2.rectangle(img, (0, 450), (250, 720), (34, 255, 0), cv2.FILLED)
         cv2.putText(img, str(int(count)), (45, 670), cv2.FONT_HERSHEY_PLAIN, 15, (255, 0, 0), 25)
+
+        # Display the progress bar
+        cv2.rectangle(img, (1100, 100), (1175, 650), (34, 255, 0), 3)
+        cv2.rectangle(img, (1100,int(bar)), (1175, 650), (34,255,0), cv2.FILLED)
+        cv2.putText(img, f'{int(per)} %', (1100, 75), cv2.FONT_HERSHEY_PLAIN, 4, (255, 0, 0), 4)
 
         # FPS calculation
         cTime = time.time()
@@ -92,9 +98,9 @@ while True:
         cv2.putText(img, str(int(fps)), (50, 100), cv2.FONT_HERSHEY_PLAIN, 5, (255, 0, 0), 5)
 
         # Optional: Stop the program when count reaches 20
-        if count >= 20:
-            print("Count limit reached.")
-            break
+        # if count >= 20:
+        #     print("Count limit reached.")
+        #     break
 
     # Show the output image
     cv2.imshow("Image", img)
