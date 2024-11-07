@@ -42,6 +42,7 @@ while True:
             # Use angle tracking only for pull-ups
             angle = detector.findAngle(img, landmark1, landmark2, landmark3)
             print(f"Detected Angle (Pull-Ups): {angle}")  # Debugging: Print the angle value
+            print(f"{count = }")
             
             # Map the angle to a percentage for pull-ups
             per = np.interp(angle, angle_range, (0, 100))
