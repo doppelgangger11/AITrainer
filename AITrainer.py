@@ -1,4 +1,4 @@
-# TODO see in todo.md
+# TODO : pulls-up
 
 import cv2
 import numpy as np
