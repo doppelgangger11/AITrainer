@@ -82,14 +82,14 @@ while True:
 
             print(f'{count = }')
 
+            # Display the progress bar and presentage for squats 
+            cv2.rectangle(img, (1100, 100), (1175, 650), (34, 255, 0), 3)
+            cv2.rectangle(img, (1100,int(bar)), (1175, 650), (34,255,0), cv2.FILLED)
+            cv2.putText(img, f'{int(per)} %', (1100, 75), cv2.FONT_HERSHEY_PLAIN, 4, (255, 0, 0), 4)
+
         # Display the current count for both exercises
         cv2.rectangle(img, (0, 450), (250, 720), (34, 255, 0), cv2.FILLED)
         cv2.putText(img, str(int(count)), (45, 670), cv2.FONT_HERSHEY_PLAIN, 15, (255, 0, 0), 25)
-
-        # Display the progress bar
-        cv2.rectangle(img, (1100, 100), (1175, 650), (34, 255, 0), 3)
-        cv2.rectangle(img, (1100,int(bar)), (1175, 650), (34,255,0), cv2.FILLED)
-        cv2.putText(img, f'{int(per)} %', (1100, 75), cv2.FONT_HERSHEY_PLAIN, 4, (255, 0, 0), 4)
 
         # FPS calculation
         cTime = time.time()
