@@ -4,14 +4,25 @@ import time
 from squats import pose_module1 as squat_module
 from pullups import pose_module as pullup_module
 
+BASE_VIDEO_DIR = './data/train'
+
+choises: dict = dict()
+with open('./data/completed_ex.txt', 'r') as file:
+    for index, ex in enumerate(file):
+        choises[index] = ex
+        
 # Prompt the user to select an exercise
-exercise = input("Select exercise (squats/pull-ups): ").strip().lower()
+exercise = input(f"Select the number {[(i, choises[i].strip('\n')) for i in choises]}: ").strip()
+exercise = int(exercise)
 
 # Set up video capture (change path if necessary)
-cap = cv2.VideoCapture("./data/train/чел приседает.mp4" if exercise == "squats" else "./data/train/pullups.mp4")
+cap = cv2.VideoCapture(f"{BASE_VIDEO_DIR}/{choises[exercise]}.mp4")
 
 # Choose the correct pose detector based on the selected exercise
-detector = squat_module.poseDetector() if exercise == "squats" else pullup_module.poseDetector()
+if exercise == 0:
+    detector = squat_module.poseDetector()
+elif exercise == 1:
+    detector = pullup_module.poseDetector()
 
 count = 0
 direction = 0  # 0 = going down, 1 = going up
@@ -38,7 +49,7 @@ while True:
     lmList = detector.findPosition(img, False)
 
     if len(lmList) != 0:
-        if exercise == "pull-ups":
+        if exercise == 1:
             # Use angle tracking only for pull-ups
             angle = detector.findAngle(img, landmark1, landmark2, landmark3)
             print(f"Detected Angle (Pull-Ups): {angle}")  # Debugging: Print the angle value
@@ -59,11 +70,6 @@ while True:
                     count += 0.5
                     direction = 0
                     print(f"Incremented count to {count}. Direction set to {direction}.")  # Debugging
-            
-            # Draw the progress bar and percentage for pull-ups
-            cv2.rectangle(img, (1100, 100), (1175, 650), (34, 255, 0), 3)
-            cv2.rectangle(img, (1100, int(bar)), (1175, 650), (34, 255, 0), cv2.FILLED)
-            cv2.putText(img, f'{int(per)} %', (1100, 75), cv2.FONT_HERSHEY_PLAIN, 4, (255, 0, 0), 4)
 
         else:
             angle = detector.findAngle(img, 24, 26, 28)
@@ -83,10 +89,10 @@ while True:
 
             print(f'{count = }')
 
-            # Display the progress bar and presentage for squats 
-            cv2.rectangle(img, (1100, 100), (1175, 650), (34, 255, 0), 3)
-            cv2.rectangle(img, (1100,int(bar)), (1175, 650), (34,255,0), cv2.FILLED)
-            cv2.putText(img, f'{int(per)} %', (1100, 75), cv2.FONT_HERSHEY_PLAIN, 4, (255, 0, 0), 4)
+        # Draw the progress bar and percentage for pull-ups
+        cv2.rectangle(img, (1100, 100), (1175, 650), (34, 255, 0), 3)
+        cv2.rectangle(img, (1100, int(bar)), (1175, 650), (34, 255, 0), cv2.FILLED)
+        cv2.putText(img, f'{int(per)} %', (1100, 75), cv2.FONT_HERSHEY_PLAIN, 4, (255, 0, 0), 4)
 
         # Display the current count for both exercises
         cv2.rectangle(img, (0, 450), (250, 720), (34, 255, 0), cv2.FILLED)
